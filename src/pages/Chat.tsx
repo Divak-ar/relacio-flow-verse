@@ -1,10 +1,11 @@
 import React, { useState } from "react"
-import { Send, Phone, Video, MoreVertical, Image, Smile, Paperclip } from "lucide-react"
+import { Send, Phone, Video, MoreVertical, Image, Smile, Paperclip, Clock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { ChatInput, DisappearingMessage } from "@/components/chat-components"
 import { cn } from "@/lib/utils"
 
 interface ChatMessage {
@@ -12,7 +13,10 @@ interface ChatMessage {
   senderId: string
   content: string
   timestamp: Date
-  type: 'text' | 'image'
+  type: 'text' | 'image' | 'file'
+  isDisappearing?: boolean
+  fileName?: string
+  fileUrl?: string
 }
 
 interface ChatUser {
@@ -88,6 +92,7 @@ export default function Chat() {
   const [messages, setMessages] = useState<ChatMessage[]>(mockMessages)
   const [newMessage, setNewMessage] = useState("")
   const [isVideoCallActive, setIsVideoCallActive] = useState(false)
+  const [isDisappearingMode, setIsDisappearingMode] = useState(false)
 
   const sendMessage = () => {
     if (!newMessage.trim()) return
@@ -97,11 +102,31 @@ export default function Chat() {
       senderId: "current",
       content: newMessage,
       timestamp: new Date(),
-      type: 'text'
+      type: 'text',
+      isDisappearing: isDisappearingMode
     }
 
     setMessages(prev => [...prev, message])
     setNewMessage("")
+  }
+
+  const handleFileSelect = (file: File) => {
+    const message: ChatMessage = {
+      id: Date.now().toString(),
+      senderId: "current",
+      content: `Shared ${file.type.startsWith('image/') ? 'an image' : 'a file'}: ${file.name}`,
+      timestamp: new Date(),
+      type: file.type.startsWith('image/') ? 'image' : 'file',
+      fileName: file.name,
+      fileUrl: URL.createObjectURL(file),
+      isDisappearing: isDisappearingMode
+    }
+
+    setMessages(prev => [...prev, message])
+  }
+
+  const handleEmojiSelect = (emoji: string) => {
+    // This is handled in the ChatInput component
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -208,6 +233,14 @@ export default function Chat() {
               >
                 <Video className="h-4 w-4" />
               </Button>
+              <Button 
+                variant={isDisappearingMode ? "love" : "love-ghost"} 
+                size="icon"
+                onClick={() => setIsDisappearingMode(!isDisappearingMode)}
+                title="Toggle disappearing messages"
+              >
+                <Clock className="h-4 w-4" />
+              </Button>
               <Button variant="love-ghost" size="icon">
                 <MoreVertical className="h-4 w-4" />
               </Button>
@@ -257,63 +290,58 @@ export default function Chat() {
                   message.senderId === "current" ? "justify-end" : "justify-start"
                 )}
               >
-                <div
-                  className={cn(
-                    "max-w-xs lg:max-w-md px-4 py-2 rounded-2xl",
-                    message.senderId === "current"
-                      ? "bg-love-gradient text-white"
-                      : "bg-muted text-foreground"
-                  )}
-                >
-                  <p className="text-sm">{message.content}</p>
-                  <p className={cn(
-                    "text-xs mt-1",
-                    message.senderId === "current" ? "text-white/80" : "text-muted-foreground"
-                  )}>
-                    {formatTime(message.timestamp)}
-                  </p>
-                </div>
+                {message.isDisappearing ? (
+                  <DisappearingMessage
+                    content={message.content}
+                    timestamp={message.timestamp}
+                    isOwn={message.senderId === "current"}
+                    isDisappearing={message.isDisappearing}
+                  />
+                ) : (
+                  <div
+                    className={cn(
+                      "max-w-xs lg:max-w-md px-4 py-2 rounded-2xl relative",
+                      message.senderId === "current"
+                        ? "bg-love-gradient text-white"
+                        : "bg-muted text-foreground"
+                    )}
+                  >
+                    {message.type === 'image' && message.fileUrl && (
+                      <img 
+                        src={message.fileUrl} 
+                        alt="Shared image"
+                        className="w-full rounded-lg mb-2 max-w-xs"
+                      />
+                    )}
+                    {message.type === 'file' && (
+                      <div className="flex items-center space-x-2 p-2 bg-white/10 rounded-lg mb-2">
+                        <Paperclip className="h-4 w-4" />
+                        <span className="text-sm">{message.fileName}</span>
+                      </div>
+                    )}
+                    <p className="text-sm">{message.content}</p>
+                    <p className={cn(
+                      "text-xs mt-1",
+                      message.senderId === "current" ? "text-white/80" : "text-muted-foreground"
+                    )}>
+                      {formatTime(message.timestamp)}
+                    </p>
+                  </div>
+                )}
               </div>
             ))}
           </div>
 
-          {/* Message Input */}
-          <div className="p-4 border-t bg-card">
-            <div className="flex items-center space-x-2">
-              <Button variant="love-ghost" size="icon">
-                <Paperclip className="h-4 w-4" />
-              </Button>
-              <Button variant="love-ghost" size="icon">
-                <Image className="h-4 w-4" />
-              </Button>
-              
-              <div className="flex-1 relative">
-                <Input
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Type a message..."
-                  className="pr-12"
-                />
-                <Button 
-                  variant="love-ghost" 
-                  size="icon" 
-                  className="absolute right-1 top-1/2 transform -translate-y-1/2"
-                >
-                  <Smile className="h-4 w-4" />
-                </Button>
-              </div>
-              
-              <Button 
-                variant="love" 
-                size="icon"
-                onClick={sendMessage}
-                disabled={!newMessage.trim()}
-              >
-                <Send className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
+          {/* Enhanced Message Input */}
+          <ChatInput
+            value={newMessage}
+            onChange={setNewMessage}
+            onSend={sendMessage}
+            onEmojiSelect={handleEmojiSelect}
+            onFileSelect={handleFileSelect}
+            isDisappearingMode={isDisappearingMode}
+            onToggleDisappearing={() => setIsDisappearingMode(!isDisappearingMode)}
+          />
         </div>
       </div>
     </div>

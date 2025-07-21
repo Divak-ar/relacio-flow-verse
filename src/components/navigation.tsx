@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom"
 import { Heart, Home, MessageCircle, Users, User, Bell, Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { NotificationDropdown } from "@/components/notification-dropdown"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import logo from "@/assets/relacio-logo.png"
@@ -59,14 +60,7 @@ export function Navigation() {
         {/* Right side - Notifications & Theme */}
         <div className="flex items-center space-x-2">
           {/* Notifications */}
-          <Button variant="love-ghost" size="icon" className="relative">
-            <Bell className="h-4 w-4" />
-            {notifications > 0 && (
-              <Badge className="absolute -top-1 -right-1 h-5 w-5 text-xs bg-destructive text-destructive-foreground rounded-full">
-                {notifications}
-              </Badge>
-            )}
-          </Button>
+          <NotificationDropdown />
 
           <ThemeToggle />
 

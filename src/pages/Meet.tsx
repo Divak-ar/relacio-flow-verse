@@ -1,8 +1,9 @@
 import React, { useState } from "react"
-import { Heart, X, Star, MapPin, Briefcase, GraduationCap, Info } from "lucide-react"
+import { Heart, X, Star, MapPin, Briefcase, GraduationCap, Info, RotateCcw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { SwipeableCard } from "@/components/swipeable-card"
 import { cn } from "@/lib/utils"
 
 interface Profile {
@@ -69,8 +70,8 @@ const mockProfiles: Profile[] = [
 export default function Meet() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isAnimating, setIsAnimating] = useState(false)
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const [showInfo, setShowInfo] = useState(false)
+  const [swipeHistory, setSwipeHistory] = useState<{ index: number; direction: 'left' | 'right' }[]>([])
+  const [showUndoButton, setShowUndoButton] = useState(false)
 
   const currentProfile = mockProfiles[currentIndex]
 
@@ -78,174 +79,57 @@ export default function Meet() {
     if (isAnimating) return
     
     setIsAnimating(true)
-    const cardElement = document.getElementById('profile-card')
-    if (cardElement) {
-      cardElement.classList.add(direction === 'left' ? 'animate-swipe-left' : 'animate-swipe-right')
-    }
-
+    
+    // Save to history for undo functionality
+    setSwipeHistory(prev => [...prev, { index: currentIndex, direction }])
+    setShowUndoButton(true)
+    
     setTimeout(() => {
       setCurrentIndex((prev) => (prev + 1) % mockProfiles.length)
-      setCurrentImageIndex(0)
-      setShowInfo(false)
-      if (cardElement) {
-        cardElement.classList.remove('animate-swipe-left', 'animate-swipe-right')
-      }
       setIsAnimating(false)
-    }, 600)
+      
+      // Hide undo button after 3 seconds
+      setTimeout(() => setShowUndoButton(false), 3000)
+    }, 300)
   }
 
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % currentProfile.images.length)
-  }
-
-  const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + currentProfile.images.length) % currentProfile.images.length)
+  const handleUndo = () => {
+    if (swipeHistory.length === 0) return
+    
+    const lastSwipe = swipeHistory[swipeHistory.length - 1]
+    setCurrentIndex(lastSwipe.index)
+    setSwipeHistory(prev => prev.slice(0, -1))
+    setShowUndoButton(false)
   }
 
   return (
-    <div className="min-h-screen bg-hero-gradient flex items-center justify-center p-4">
-      <div className="w-full max-w-md mx-auto relative">
-        {/* Profile Card */}
-        <Card 
-          id="profile-card"
-          className="card-glass border-white/20 overflow-hidden swipe-card relative h-[70vh] min-h-[600px]"
-        >
-          {/* Image Section */}
-          <div className="relative h-3/5 overflow-hidden">
-            <img
-              src={currentProfile.images[currentImageIndex]}
-              alt={currentProfile.name}
-              className="w-full h-full object-cover"
-            />
-            
-            {/* Image Navigation */}
-            <div className="absolute top-4 left-4 right-4 flex space-x-2">
-              {currentProfile.images.map((_, index) => (
-                <div 
-                  key={index}
-                  className={cn(
-                    "flex-1 h-1 rounded-full transition-all duration-300",
-                    index === currentImageIndex ? "bg-white" : "bg-white/30"
-                  )}
-                />
-              ))}
-            </div>
-
-            {/* Image Controls */}
-            <div className="absolute inset-0 flex">
-              <button 
-                className="flex-1" 
-                onClick={prevImage}
-                disabled={isAnimating}
-              />
-              <button 
-                className="flex-1" 
-                onClick={nextImage}
-                disabled={isAnimating}
-              />
-            </div>
-
-            {/* Compatibility Score */}
-            <div className="absolute top-4 right-4">
-              <Badge className="bg-success text-white font-semibold">
-                {currentProfile.compatibility}% Match
-              </Badge>
-            </div>
-
-            {/* Info Toggle */}
-            <Button
-              variant="floating"
-              size="icon"
-              className="absolute bottom-4 right-4"
-              onClick={() => setShowInfo(!showInfo)}
-            >
-              <Info className="h-4 w-4" />
-            </Button>
-          </div>
-
-          {/* Content Section */}
-          <CardContent className="p-6 h-2/5 overflow-y-auto">
-            <div className="space-y-4">
-              {/* Basic Info */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-2xl font-bold text-white">
-                    {currentProfile.name}, {currentProfile.age}
-                  </h2>
-                  <div className="flex items-center text-white/80">
-                    <Star className="h-4 w-4 mr-1 fill-yellow-400 text-yellow-400" />
-                    <span className="text-sm">4.9</span>
-                  </div>
-                </div>
-                
-                <div className="flex items-center text-white/80 text-sm">
-                  <MapPin className="h-4 w-4 mr-1" />
-                  {currentProfile.location}
-                </div>
-              </div>
-
-              {/* Additional Info (Collapsible) */}
-              {showInfo && (
-                <div className="space-y-3 animate-fade-in-up">
-                  <div className="flex items-center text-white/80 text-sm">
-                    <Briefcase className="h-4 w-4 mr-2" />
-                    {currentProfile.occupation}
-                  </div>
-                  
-                  <div className="flex items-center text-white/80 text-sm">
-                    <GraduationCap className="h-4 w-4 mr-2" />
-                    {currentProfile.education}
-                  </div>
-                </div>
-              )}
-
-              {/* Bio */}
-              <p className="text-white/90 text-sm leading-relaxed">
-                {currentProfile.bio}
-              </p>
-
-              {/* Interests */}
-              <div className="flex flex-wrap gap-2">
-                {currentProfile.interests.map((interest, index) => (
-                  <Badge 
-                    key={index}
-                    variant="outline"
-                    className="border-white/30 text-white bg-white/10 hover:bg-white/20"
-                  >
-                    {interest}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Action Buttons */}
-        <div className="flex justify-center space-x-8 mt-8">
+    <div className="min-h-screen bg-hero-gradient flex items-center justify-center p-4 relative">
+      {/* Undo Button */}
+      {showUndoButton && (
+        <div className="absolute top-4 left-4 z-50">
           <Button
             variant="floating"
-            size="icon"
-            className="h-16 w-16 rounded-full bg-white/20 hover:bg-destructive hover:scale-110 transition-all duration-300"
-            onClick={() => handleSwipe('left')}
-            disabled={isAnimating}
+            onClick={handleUndo}
+            className="bg-yellow-500 hover:bg-yellow-600 text-white shadow-lg animate-bounce-in"
           >
-            <X className="h-8 w-8" />
-          </Button>
-          
-          <Button
-            variant="floating"
-            size="icon"
-            className="h-20 w-20 rounded-full bg-white/20 hover:bg-success hover:scale-110 transition-all duration-300 animate-heart-beat"
-            onClick={() => handleSwipe('right')}
-            disabled={isAnimating}
-          >
-            <Heart className="h-10 w-10" />
+            <RotateCcw className="h-4 w-4 mr-2" />
+            Undo
           </Button>
         </div>
+      )}
+
+      <div className="w-full max-w-md mx-auto relative">
+        {/* Enhanced Swipeable Profile Card */}
+        <SwipeableCard
+          profile={currentProfile}
+          onSwipeLeft={() => handleSwipe('left')}
+          onSwipeRight={() => handleSwipe('right')}
+          onUndo={swipeHistory.length > 0 ? handleUndo : undefined}
+        />
 
         {/* Profile Counter */}
         <div className="text-center mt-6">
-          <span className="text-white/80 text-sm">
+          <span className="text-white/80 text-sm font-medium">
             {currentIndex + 1} of {mockProfiles.length}
           </span>
         </div>
