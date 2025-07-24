@@ -62,9 +62,9 @@ export function Navigation() {
           {navigation.map((item) => {
             const Icon = item.icon
             const shouldShow = !item.requireAuth || isAuthenticated
-            
+
             if (!shouldShow && item.name !== "Meet") return null
-            
+
             return (
               <Link
                 key={item.name}
@@ -91,7 +91,7 @@ export function Navigation() {
             <>
               {/* Notifications */}
               <NotificationDropdown />
-              
+
               {/* User Menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -165,9 +165,9 @@ export function Navigation() {
             {navigation.map((item) => {
               const Icon = item.icon
               const shouldShow = !item.requireAuth || isAuthenticated
-              
+
               if (!shouldShow && item.name !== "Meet") return null
-              
+
               return (
                 <Link
                   key={item.name}
@@ -189,7 +189,7 @@ export function Navigation() {
                 </Link>
               )
             })}
-            
+
             {!isAuthenticated && (
               <div className="pt-4 space-y-2">
                 <Button
@@ -215,7 +215,7 @@ export function Navigation() {
                 </Button>
               </div>
             )}
-            
+
             {isAuthenticated && (
               <div className="pt-4">
                 <Button

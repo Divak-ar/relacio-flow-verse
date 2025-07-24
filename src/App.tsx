@@ -29,62 +29,62 @@ const App = () => (
             <div className="min-h-screen bg-background">
               <Routes>
                 {/* Public routes */}
-                <Route 
-                  path="/login" 
+                <Route
+                  path="/login"
                   element={
                     <PublicRoute>
                       <Login />
                     </PublicRoute>
-                  } 
+                  }
                 />
-                <Route 
-                  path="/register" 
+                <Route
+                  path="/register"
                   element={
                     <PublicRoute>
                       <Register />
                     </PublicRoute>
-                  } 
+                  }
                 />
-                
+
                 {/* Protected routes */}
-                <Route 
-                  path="/profile-setup" 
+                <Route
+                  path="/profile-setup"
                   element={
                     <ProtectedRoute>
                       <ProfileSetup />
                     </ProtectedRoute>
-                  } 
+                  }
                 />
-                
+
                 {/* Routes with navigation */}
                 <Route path="/*" element={
                   <>
                     <Navigation />
                     <Routes>
                       <Route path="/" element={<Home />} />
-                      <Route 
-                        path="/meet" 
+                      <Route
+                        path="/meet"
                         element={
                           <ProtectedRoute>
                             <Meet />
                           </ProtectedRoute>
-                        } 
+                        }
                       />
-                      <Route 
-                        path="/chat" 
+                      <Route
+                        path="/chat"
                         element={
                           <ProtectedRoute>
                             <Chat />
                           </ProtectedRoute>
-                        } 
+                        }
                       />
-                      <Route 
-                        path="/profile" 
+                      <Route
+                        path="/profile"
                         element={
                           <ProtectedRoute>
                             <Profile />
                           </ProtectedRoute>
-                        } 
+                        }
                       />
                       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                       <Route path="*" element={<NotFound />} />

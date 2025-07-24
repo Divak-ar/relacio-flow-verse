@@ -73,7 +73,7 @@ export default function Home() {
         <div className="absolute inset-0 opacity-30" style={{
           backgroundImage: "url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%23ffffff\" fill-opacity=\"0.05\"%3E%3Ccircle cx=\"30\" cy=\"30\" r=\"1\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')"
         }}></div>
-        
+
         <div className="container relative">
           <div className="grid lg:grid-cols-2 gap-12 items-center py-20">
             <div className="space-y-8 animate-fade-in-up">
@@ -88,11 +88,11 @@ export default function Home() {
                   </span>
                 </h1>
                 <p className="text-xl text-white/90 leading-relaxed">
-                  Experience dating like never before with our revolutionary vertical discovery, 
+                  Experience dating like never before with our revolutionary vertical discovery,
                   AI-powered matching, and seamless video integration.
                 </p>
               </div>
-              
+
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button asChild size="xl" variant="floating" className="group">
                   <Link to="/meet">
@@ -117,17 +117,17 @@ export default function Home() {
                 ))}
               </div>
             </div>
-            
+
             <div className="relative lg:block hidden">
               <div className="relative">
-                <img 
-                  src={heroImage} 
-                  alt="Relacio Hero" 
+                <img
+                  src={heroImage}
+                  alt="Relacio Hero"
                   className="rounded-2xl shadow-float float-animation"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl"></div>
               </div>
-              
+
               {/* Floating elements */}
               <div className="absolute -top-4 -left-4 animate-love-bounce">
                 <div className="bg-white/20 backdrop-blur-md rounded-full p-4 border border-white/30">
@@ -156,7 +156,7 @@ export default function Home() {
               Discover what makes Relacio the most advanced and user-friendly dating platform
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => {
               const Icon = feature.icon
@@ -188,26 +188,26 @@ export default function Home() {
               Real stories from real people who found love on Relacio
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <Card key={index} className="card-glass border-white/20 hover:shadow-love transition-all duration-500">
+              <Card key={index} className="card-glass border-border hover:shadow-love transition-all duration-500">
                 <CardContent className="p-8 space-y-6">
                   <div className="flex space-x-1">
                     {[...Array(testimonial.rating)].map((_, i) => (
                       <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
                     ))}
                   </div>
-                  <p className="text-white/90 italic leading-relaxed">"{testimonial.content}"</p>
+                  <p className="text-foreground/90 italic leading-relaxed">"{testimonial.content}"</p>
                   <div className="flex items-center space-x-4">
-                    <img 
-                      src={testimonial.image} 
+                    <img
+                      src={testimonial.image}
                       alt={testimonial.name}
                       className="w-12 h-12 rounded-full object-cover"
                     />
                     <div>
-                      <div className="text-white font-semibold">{testimonial.name}</div>
-                      <div className="text-white/70 text-sm">Age {testimonial.age}</div>
+                      <div className="text-foreground font-semibold">{testimonial.name}</div>
+                      <div className="text-muted-foreground text-sm">Age {testimonial.age}</div>
                     </div>
                   </div>
                 </CardContent>
