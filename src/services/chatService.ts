@@ -47,7 +47,7 @@ export interface SendMessageRequest {
 export const chatAPI = {
   // Get all conversations
   getConversations: async (): Promise<Conversation[]> => {
-    const response = await api.get('/chat/conversations');
+    const response = await api.get('/api/chat/conversations');
     return response.data;
   },
 
@@ -57,13 +57,13 @@ export const chatAPI = {
     page: number = 1,
     limit: number = 50
   ): Promise<Message[]> => {
-    const response = await api.get(`/chat/conversations/${conversationId}/messages?page=${page}&limit=${limit}`);
+    const response = await api.get(`/api/chat/conversations/${conversationId}/messages?page=${page}&limit=${limit}`);
     return response.data;
   },
 
   // Send a message
   sendMessage: async (conversationId: string, content: string): Promise<Message> => {
-    const response = await api.post(`/chat/conversations/${conversationId}/messages`, { content });
+    const response = await api.post(`/api/chat/conversations/${conversationId}/messages`, { content });
     return response.data;
   },
 
@@ -72,7 +72,7 @@ export const chatAPI = {
     const formData = new FormData();
     formData.append('media', file);
     
-    const response = await api.post(`/chat/conversations/${conversationId}/media`, formData, {
+    const response = await api.post(`/api/chat/conversations/${conversationId}/media`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -82,22 +82,22 @@ export const chatAPI = {
 
   // Mark messages as read
   markAsRead: async (conversationId: string): Promise<void> => {
-    await api.put(`/chat/conversations/${conversationId}/read`);
+    await api.put(`/api/chat/conversations/${conversationId}/read`);
   },
 
   // Delete message
   deleteMessage: async (messageId: string): Promise<void> => {
-    await api.delete(`/chat/messages/${messageId}`);
+    await api.delete(`/api/chat/messages/${messageId}`);
   },
 
   // Get matches
   getMatches: async (): Promise<unknown[]> => {
-    const response = await api.get('/chat/matches');
+    const response = await api.get('/api/chat/matches');
     return response.data;
   },
 
   // Unmatch user
   unmatchUser: async (matchId: string): Promise<void> => {
-    await api.delete(`/chat/matches/${matchId}`);
+    await api.delete(`/api/chat/matches/${matchId}`);
   },
 };

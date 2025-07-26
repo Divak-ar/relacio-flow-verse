@@ -41,31 +41,31 @@ export interface Match {
 export const discoveryAPI = {
   // Get potential matches for swiping
   getDiscoveryProfiles: async (limit: number = 10): Promise<DiscoveryProfile[]> => {
-    const response = await api.get(`/discovery/profiles?limit=${limit}`);
+    const response = await api.get(`/api/discovery/profiles?limit=${limit}`);
     return response.data;
   },
 
   // Swipe on a profile
   swipe: async (data: SwipeAction): Promise<{ isMatch: boolean; matchId?: string }> => {
-    const response = await api.post('/discovery/swipe', data);
+    const response = await api.post('/api/discovery/swipe', data);
     return response.data;
   },
 
   // Super like a profile
   superLike: async (targetUserId: string): Promise<{ isMatch: boolean; matchId?: string }> => {
-    const response = await api.post('/discovery/super-like', { targetUserId });
+    const response = await api.post('/api/discovery/super-like', { targetUserId });
     return response.data;
   },
 
   // Undo last swipe
   undoSwipe: async (): Promise<{ success: boolean }> => {
-    const response = await api.post('/discovery/undo');
+    const response = await api.post('/api/discovery/undo');
     return response.data;
   },
 
   // Get matches
   getMatches: async (): Promise<Match[]> => {
-    const response = await api.get('/discovery/matches');
+    const response = await api.get('/api/discovery/matches');
     return response.data;
   },
 };

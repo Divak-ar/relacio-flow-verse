@@ -41,13 +41,13 @@ export interface UpdateProfileRequest {
 export const profileAPI = {
   // Get current user's profile
   getProfile: async (): Promise<Profile> => {
-    const response = await api.get('/profile/me');
+    const response = await api.get('/api/profile/me');
     return response.data;
   },
 
   // Update profile
   updateProfile: async (data: UpdateProfileRequest): Promise<Profile> => {
-    const response = await api.put('/profile', data);
+    const response = await api.put('/api/profile', data);
     return response.data;
   },
 
@@ -56,7 +56,7 @@ export const profileAPI = {
     const formData = new FormData();
     formData.append('profilePicture', file);
     
-    const response = await api.post('/profile/upload-picture', formData, {
+    const response = await api.post('/api/profile/upload-picture', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -69,7 +69,7 @@ export const profileAPI = {
     const formData = new FormData();
     files.forEach(file => formData.append('photos', file));
     
-    const response = await api.post('/profile/upload-photos', formData, {
+    const response = await api.post('/api/profile/upload-photos', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -79,22 +79,22 @@ export const profileAPI = {
 
   // Delete photo
   deletePhoto: async (photoId: string): Promise<void> => {
-    await api.delete(`/profile/photos/${photoId}`);
+    await api.delete(`/api/profile/photos/${photoId}`);
   },
 
   // Get user profile by ID
   getUserProfile: async (userId: string): Promise<Profile> => {
-    const response = await api.get(`/profile/${userId}`);
+    const response = await api.get(`/api/profile/${userId}`);
     return response.data;
   },
 
   // Update location
   updateLocation: async (latitude: number, longitude: number): Promise<void> => {
-    await api.put('/profile/location', { latitude, longitude });
+    await api.put('/api/profile/location', { latitude, longitude });
   },
 
   // Update preferences
   updatePreferences: async (preferences: Profile['preferences']): Promise<void> => {
-    await api.put('/profile/preferences', preferences);
+    await api.put('/api/profile/preferences', preferences);
   },
 };

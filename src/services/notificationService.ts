@@ -32,24 +32,24 @@ export const notificationAPI = {
       params.append('unread', unread.toString());
     }
 
-    const response = await api.get(`/notifications?${params}`);
+    const response = await api.get(`/api/notifications?${params}`);
     return response.data;
   },
 
   // Mark notification as read
   markAsRead: async (notificationId: string): Promise<Notification> => {
-    const response = await api.put(`/notifications/${notificationId}/read`);
+    const response = await api.put(`/api/notifications/${notificationId}/read`);
     return response.data;
   },
 
   // Mark all notifications as read
   markAllAsRead: async (): Promise<void> => {
-    await api.put('/notifications/mark-all-read');
+    await api.put('/api/notifications/mark-all-read');
   },
 
   // Delete notification
   deleteNotification: async (notificationId: string): Promise<void> => {
-    await api.delete(`/notifications/${notificationId}`);
+    await api.delete(`/api/notifications/${notificationId}`);
   },
 
   // Update notification settings
@@ -60,6 +60,6 @@ export const notificationAPI = {
     messageNotifications?: boolean;
     promotionalNotifications?: boolean;
   }): Promise<void> => {
-    await api.put('/notifications/settings', settings);
+    await api.put('/api/notifications/settings', settings);
   },
 };
