@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { authAPI } from '@/services/authService'
+import socketService from '@/services/socketService'
 
 export interface User {
     id: string
@@ -59,23 +61,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setIsLoading(true)
 
         try {
-            // Simulate API call - you'll replace this with actual API call later
-            await new Promise(resolve => setTimeout(resolve, 1000))
+            const response = await authAPI.login({ email, password })
+            
+            if (response.success) {
+                const user: User = {
+                    id: response.user.id,
+                    email: response.user.email,
+                    name: response.user.name,
+                    avatar: '', // Will be loaded from profile
+                    hasCompletedProfile: response.user.hasCompletedProfile
+                }
 
-            // Mock user data - replace with actual API response
-            const mockUser: User = {
-                id: '1',
-                email,
-                name: email.split('@')[0], // Extract name from email for now
-                avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-                hasCompletedProfile: false
+                setUser(user)
+                localStorage.setItem('relacio_user', JSON.stringify(user))
+                localStorage.setItem('authToken', response.token)
+
+                // Initialize socket connection
+                socketService.initialize(response.token)
+
+                return { success: true }
+            } else {
+                return { success: false, error: response.error || 'Login failed' }
             }
-
-            setUser(mockUser)
-            localStorage.setItem('relacio_user', JSON.stringify(mockUser))
-
-            return { success: true }
         } catch (error) {
+            console.error('Login error:', error)
             return { success: false, error: 'Login failed. Please try again.' }
         } finally {
             setIsLoading(false)
@@ -86,23 +95,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setIsLoading(true)
 
         try {
-            // Simulate API call - you'll replace this with actual API call later
-            await new Promise(resolve => setTimeout(resolve, 1000))
+            const response = await authAPI.register({ 
+                email, 
+                password, 
+                confirmPassword: password,
+                name 
+            })
+            
+            if (response.success) {
+                const user: User = {
+                    id: response.user.id,
+                    email: response.user.email,
+                    name: response.user.name,
+                    avatar: '',
+                    hasCompletedProfile: response.user.hasCompletedProfile
+                }
 
-            // Mock user data - replace with actual API response
-            const mockUser: User = {
-                id: Date.now().toString(),
-                email,
-                name,
-                avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-                hasCompletedProfile: false
+                setUser(user)
+                localStorage.setItem('relacio_user', JSON.stringify(user))
+                localStorage.setItem('authToken', response.token)
+
+                // Initialize socket connection
+                socketService.initialize(response.token)
+
+                return { success: true }
+            } else {
+                return { success: false, error: response.error || 'Registration failed' }
             }
-
-            setUser(mockUser)
-            localStorage.setItem('relacio_user', JSON.stringify(mockUser))
-
-            return { success: true }
         } catch (error) {
+            console.error('Registration error:', error)
             return { success: false, error: 'Registration failed. Please try again.' }
         } finally {
             setIsLoading(false)
@@ -112,6 +133,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const logout = () => {
         setUser(null)
         localStorage.removeItem('relacio_user')
+        localStorage.removeItem('authToken')
+        socketService.disconnect()
     }
 
     const updateUserProfile = (updates: Partial<User>) => {

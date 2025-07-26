@@ -41,7 +41,7 @@ export interface Match {
 export const discoveryAPI = {
   // Get potential matches for swiping
   getDiscoveryProfiles: async (limit: number = 10): Promise<DiscoveryProfile[]> => {
-    const response = await api.get(`/discovery?limit=${limit}`);
+    const response = await api.get(`/discovery/profiles?limit=${limit}`);
     return response.data;
   },
 
@@ -65,7 +65,7 @@ export const discoveryAPI = {
 
   // Get matches
   getMatches: async (): Promise<Match[]> => {
-    const response = await api.get('/chat/matches');
+    const response = await api.get('/discovery/matches');
     return response.data;
   },
 };

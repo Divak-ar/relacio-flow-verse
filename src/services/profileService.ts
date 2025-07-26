@@ -41,7 +41,7 @@ export interface UpdateProfileRequest {
 export const profileAPI = {
   // Get current user's profile
   getProfile: async (): Promise<Profile> => {
-    const response = await api.get('/profile');
+    const response = await api.get('/profile/me');
     return response.data;
   },
 
