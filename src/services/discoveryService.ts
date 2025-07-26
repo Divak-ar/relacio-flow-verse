@@ -42,19 +42,19 @@ export const discoveryAPI = {
   // Get potential matches for swiping
   getDiscoveryProfiles: async (limit: number = 10): Promise<DiscoveryProfile[]> => {
     const response = await api.get(`/api/discovery/profiles?limit=${limit}`);
-    return response.data;
+    return response.data.data.profiles;
   },
 
   // Swipe on a profile
   swipe: async (data: SwipeAction): Promise<{ isMatch: boolean; matchId?: string }> => {
     const response = await api.post('/api/discovery/swipe', data);
-    return response.data;
+    return response.data.data;
   },
 
   // Super like a profile
   superLike: async (targetUserId: string): Promise<{ isMatch: boolean; matchId?: string }> => {
     const response = await api.post('/api/discovery/super-like', { targetUserId });
-    return response.data;
+    return response.data.data;
   },
 
   // Undo last swipe
@@ -66,6 +66,6 @@ export const discoveryAPI = {
   // Get matches
   getMatches: async (): Promise<Match[]> => {
     const response = await api.get('/api/discovery/matches');
-    return response.data;
+    return response.data.data.matches;
   },
 };

@@ -60,6 +60,6 @@ export const notificationAPI = {
     messageNotifications?: boolean;
     promotionalNotifications?: boolean;
   }): Promise<void> => {
-    await api.put('/api/notifications/settings', settings);
+    await api.put('/api/notifications/preferences', { preferences: settings });
   },
 };

@@ -48,7 +48,7 @@ export const chatAPI = {
   // Get all conversations
   getConversations: async (): Promise<Conversation[]> => {
     const response = await api.get('/api/chat/conversations');
-    return response.data;
+    return response.data.data.conversations;
   },
 
   // Get messages for a conversation
@@ -57,14 +57,14 @@ export const chatAPI = {
     page: number = 1,
     limit: number = 50
   ): Promise<Message[]> => {
-    const response = await api.get(`/api/chat/conversations/${conversationId}/messages?page=${page}&limit=${limit}`);
-    return response.data;
+    const response = await api.get(`/api/chat/conversation/${conversationId}/messages?page=${page}&limit=${limit}`);
+    return response.data.data.messages;
   },
 
   // Send a message
   sendMessage: async (conversationId: string, content: string): Promise<Message> => {
-    const response = await api.post(`/api/chat/conversations/${conversationId}/messages`, { content });
-    return response.data;
+    const response = await api.post('/api/chat/send-message', { conversationId, content });
+    return response.data.data.message;
   },
 
   // Send media message
@@ -72,17 +72,17 @@ export const chatAPI = {
     const formData = new FormData();
     formData.append('media', file);
     
-    const response = await api.post(`/api/chat/conversations/${conversationId}/media`, formData, {
+    const response = await api.post('/api/chat/upload-media', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
-    return response.data;
+    return response.data.data.message;
   },
 
   // Mark messages as read
   markAsRead: async (conversationId: string): Promise<void> => {
-    await api.put(`/api/chat/conversations/${conversationId}/read`);
+    await api.put(`/api/chat/mark-read/${conversationId}`);
   },
 
   // Delete message
@@ -92,8 +92,8 @@ export const chatAPI = {
 
   // Get matches
   getMatches: async (): Promise<unknown[]> => {
-    const response = await api.get('/api/chat/matches');
-    return response.data;
+    const response = await api.get('/api/discovery/matches');
+    return response.data.data.matches;
   },
 
   // Unmatch user

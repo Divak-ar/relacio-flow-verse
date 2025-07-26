@@ -65,19 +65,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             
             if (response.success) {
                 const user: User = {
-                    id: response.user.id,
-                    email: response.user.email,
-                    name: response.user.name,
+                    id: response.data.user.id,
+                    email: response.data.user.email,
+                    name: response.data.user.name,
                     avatar: '', // Will be loaded from profile
-                    hasCompletedProfile: response.user.hasCompletedProfile
+                    hasCompletedProfile: response.data.user.hasCompletedProfile
                 }
 
                 setUser(user)
                 localStorage.setItem('relacio_user', JSON.stringify(user))
-                localStorage.setItem('authToken', response.token)
+                localStorage.setItem('authToken', response.data.token)
 
                 // Initialize socket connection
-                socketService.initialize(response.token)
+                socketService.initialize(response.data.token)
 
                 return { success: true }
             } else {
@@ -121,19 +121,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             
             if (response.success) {
                 const user: User = {
-                    id: response.user.id,
-                    email: response.user.email,
-                    name: response.user.name,
+                    id: response.data.user.id,
+                    email: response.data.user.email,
+                    name: response.data.user.name,
                     avatar: '',
-                    hasCompletedProfile: response.user.hasCompletedProfile
+                    hasCompletedProfile: response.data.user.hasCompletedProfile
                 }
 
                 setUser(user)
                 localStorage.setItem('relacio_user', JSON.stringify(user))
-                localStorage.setItem('authToken', response.token)
+                localStorage.setItem('authToken', response.data.token)
 
                 // Initialize socket connection
-                socketService.initialize(response.token)
+                socketService.initialize(response.data.token)
 
                 return { success: true }
             } else {

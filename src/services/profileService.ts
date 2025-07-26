@@ -42,50 +42,56 @@ export const profileAPI = {
   // Get current user's profile
   getProfile: async (): Promise<Profile> => {
     const response = await api.get('/api/profile/me');
-    return response.data;
+    return response.data.data.profile;
   },
 
   // Update profile
   updateProfile: async (data: UpdateProfileRequest): Promise<Profile> => {
-    const response = await api.put('/api/profile', data);
-    return response.data;
+    const response = await api.put('/api/profile/update', data);
+    return response.data.data.profile;
   },
 
   // Upload profile picture
   uploadProfilePicture: async (file: File): Promise<{ url: string; publicId: string }> => {
     const formData = new FormData();
-    formData.append('profilePicture', file);
+    formData.append('photo', file);
     
-    const response = await api.post('/api/profile/upload-picture', formData, {
+    const response = await api.post('/api/profile/upload-photo', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
-    return response.data;
+    return response.data.data.photo;
   },
 
   // Upload additional photos
   uploadPhotos: async (files: File[]): Promise<{ photos: { url: string; publicId: string }[] }> => {
-    const formData = new FormData();
-    files.forEach(file => formData.append('photos', file));
-    
-    const response = await api.post('/api/profile/upload-photos', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+    // Since backend only supports single photo upload, upload one by one
+    const uploadPromises = files.map(file => {
+      const formData = new FormData();
+      formData.append('photo', file);
+      return api.post('/api/profile/upload-photo', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
     });
-    return response.data;
+    
+    const responses = await Promise.all(uploadPromises);
+    return {
+      photos: responses.map(response => response.data.data.photo)
+    };
   },
 
   // Delete photo
   deletePhoto: async (photoId: string): Promise<void> => {
-    await api.delete(`/api/profile/photos/${photoId}`);
+    await api.delete(`/api/profile/photo/${photoId}`);
   },
 
   // Get user profile by ID
   getUserProfile: async (userId: string): Promise<Profile> => {
     const response = await api.get(`/api/profile/${userId}`);
-    return response.data;
+    return response.data.data.profile;
   },
 
   // Update location

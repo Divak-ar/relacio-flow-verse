@@ -15,13 +15,19 @@ export interface RegisterRequest {
 
 export interface AuthResponse {
   success: boolean;
-  user: {
-    id: string;
-    email: string;
-    name: string;
-    hasCompletedProfile: boolean;
+  message?: string;
+  data: {
+    user: {
+      id: string;
+      email: string;
+      name: string;
+      hasCompletedProfile: boolean;
+      isEmailVerified?: boolean;
+      subscription?: string;
+      createdAt?: string;
+    };
+    token: string;
   };
-  token: string;
   error?: string;
 }
 
