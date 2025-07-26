@@ -83,8 +83,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             } else {
                 return { success: false, error: response.error || 'Login failed' }
             }
-        } catch (error) {
+        } catch (error: unknown) {
             console.error('Login error:', error)
+            
+            // Handle different types of errors
+            const axiosError = error as { response?: { status?: number; data?: { message?: string; errors?: { msg: string }[] } }; message?: string }
+            
+            if (axiosError?.response?.status === 429) {
+                return { success: false, error: 'Too many login attempts. Please wait a few minutes before trying again.' }
+            } else if (axiosError?.response?.status === 401) {
+                return { success: false, error: 'Invalid email or password. Please check your credentials.' }
+            } else if (axiosError?.response?.status === 400) {
+                const errorMessage = axiosError?.response?.data?.message || axiosError?.response?.data?.errors?.[0]?.msg
+                return { success: false, error: errorMessage || 'Please check your input and try again.' }
+            } else if (axiosError?.response?.data?.message) {
+                return { success: false, error: axiosError.response.data.message }
+            } else if (axiosError?.message) {
+                return { success: false, error: axiosError.message }
+            }
+            
             return { success: false, error: 'Login failed. Please try again.' }
         } finally {
             setIsLoading(false)
@@ -122,8 +139,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             } else {
                 return { success: false, error: response.error || 'Registration failed' }
             }
-        } catch (error) {
+        } catch (error: unknown) {
             console.error('Registration error:', error)
+            
+            // Handle different types of errors
+            const axiosError = error as { response?: { status?: number; data?: { message?: string; errors?: { msg: string }[] } }; message?: string }
+            
+            if (axiosError?.response?.status === 429) {
+                return { success: false, error: 'Too many registration attempts. Please wait a few minutes before trying again.' }
+            } else if (axiosError?.response?.status === 409) {
+                return { success: false, error: 'An account with this email already exists. Please try logging in instead.' }
+            } else if (axiosError?.response?.status === 400) {
+                const errorMessage = axiosError?.response?.data?.message || axiosError?.response?.data?.errors?.[0]?.msg
+                return { success: false, error: errorMessage || 'Please check your input and try again.' }
+            } else if (axiosError?.response?.data?.message) {
+                return { success: false, error: axiosError.response.data.message }
+            } else if (axiosError?.message) {
+                return { success: false, error: axiosError.message }
+            }
+            
             return { success: false, error: 'Registration failed. Please try again.' }
         } finally {
             setIsLoading(false)
